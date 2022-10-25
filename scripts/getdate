@@ -1,0 +1,36 @@
+#!/bin/bash
+#: Title       : getdate - output year-month-day date from year and day of year ("julian day")
+#: Synopsis    : getdate 2000 366
+#: Date        : 2018-08-28
+#: Author      : "Antonio Villasenor" <antonio.villasenor@csic.es>
+#: Version     : 1.0
+#: Requirements: POSIX date command (gdate in macOS)
+#: Arguments   : year
+#:             : day_of_year
+#: Options     : none
+set -u # error if variable undefined
+set -o pipefail
+
+if command -v date > /dev/null && date --version > /dev/null 2>&1; then
+    DATE=date
+elif command -v gdate > /dev/null && gdate --version > /dev/null 2>&1; then
+    DATE=gdate
+else
+    echo "ERROR: no GNU date command in this system"
+    exit 1
+fi
+
+progname=${0##*/}
+
+day_in_seconds=86400
+
+if [[ $# -eq 2 ]]; then
+	year=$1
+	doy=$2
+	seconds_start_year=$( $DATE -u --date="$year-01-01" +%s)
+	seconds=$( bc -l <<< "$seconds_start_year + $day_in_seconds * ($doy - 1)" )
+	$DATE -u --date="@$seconds" +%Y-%m-%d
+else
+	echo "usage: $progname year day_of_year"
+	exit 1
+fi
