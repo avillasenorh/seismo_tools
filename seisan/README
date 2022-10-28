@@ -1,0 +1,17 @@
+Conversion and utility programs for SEISAN Nordic files
+
+ign2nor                converts IGN IMS files to Nordic
+gse2nor                converts GSE files to Nordic
+iscisf2nor             converts ISC ISF files to Nordic
+selnor                 selects events from a Nordic file based on -R -Z -M (comments needed)
+nor2stalist            obtains station statistics from a Nordic file: np, ns, date1, date2
+sfilecmp               adds component and weight info to Nordic files obtained from ign2nor
+sfileweigth            adds weight info to Nordic files obtained from ign2nor (difference with sfilecmp?)
+rmevid                 removes events in Nordic file with given event IDs
+extractevid            extracts events in Nordic file with given event IDs (comments; combined with rmevid?)
+stadist                calculates epicentral distance to station (?)
+sfile_sta_dist         calculates epicentral distance to station in a Nordic file (?)
+sta2dist               calculates epicentral distance to station (?)
+fixnullchar            replaces NULL characters in Nordic file with blank characters
+
+selgrid                not in Makefile; very similar to selnor
