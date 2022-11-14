@@ -133,8 +133,15 @@
                   km='W'
                elseif (magname(1:4).eq.'Mc  ') then
                   km='C'
+               elseif (magname(1:4).eq.'Md  ') then
+                  km='C'
+               elseif (magname(1:4).eq.'Ms  ') then
+                  km='S'
+               elseif (magname(1:4).eq.'ML  ') then
+                  km='L'
                else
-                  write(0,*) 'Unknown magnitude',magname
+                  write(0,*) 'Unknown magnitude: ',magname
+                  km=' '
                endif
                if (magsrc.eq.'bul') magsrc='IGN'
                if (nmag.eq.1) then
