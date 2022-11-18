@@ -12,6 +12,7 @@ BINARIES =	ign2nor \
 			iscisf2nor \
 			selnor \
 			nor2stalist \
+			nor_addchn \
 			sfilecmp \
 			sfileweigth \
 			rmevid \
@@ -37,6 +38,9 @@ selnor:	selnor.o substr.o trim.o
 
 nor2stalist:	nor2stalist.o
 	$(FC) $(FFLAGS) -o $(BINDIR)/nor2stalist nor2stalist.o
+
+nor_addchn:	nor_addchn.o
+	$(FC) $(FFLAGS) -o $(BINDIR)/nor_addchn nor_addchn.o
 
 sfilecmp:	sfilecmp.o distaz.o
 	$(FC) $(FFLAGS) -o $(BINDIR)/sfilecmp sfilecmp.o distaz.o
