@@ -35,10 +35,10 @@ c     initialize
          date2(i)=0
       enddo
 
-      write (*,*) 'Input NORDIC file:'
+c     write (*,*) 'Input NORDIC file:'
       read (*,1000) infile
       open(1,file=infile,status='old',form='formatted',err=8888)
-      write (*,*) 'Input channel file:'
+c     write (*,*) 'Input channel file:'
       read (*,1000) chnfile
       open(2,file=chnfile,status='old',form='formatted',err=8888)
 
@@ -48,7 +48,7 @@ c     initialize
       go to 5
    50 nchn=i-1
       close(2)
-      print *,'Number of channels in channel file:',nchn
+c     print *,'Number of channels in channel file:',nchn
 
       levent=.FALSE.
       lsta=.FALSE.
@@ -71,7 +71,7 @@ c     initialize
            enddo
 
   750      if (ii.lt.0) then
-               print *,'Channels not found for ',ksta
+               write(0,'(a,1x,a)') 'Channels not found for',ksta
            else
                if (line(7:7).eq.' ') then
                   line(7:7)=chn(ii)(1:1)
