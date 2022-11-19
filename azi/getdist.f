@@ -64,7 +64,8 @@ c - read data from stdin
       if (nerr.eq.0) then
 c        write(6,1001) rlon1,rlat1,rlon,rlat,az,dist,xdeg
 c        write(6,1002) az,dist,xdeg,rlon1,rlat1,rlon2,rlat2
-         write(6,1003) az,xdeg,dist,rlon1,rlat1,rlon2,rlat2
+c        write(6,1003) az,xdeg,dist,rlon1,rlat1,rlon2,rlat2
+         write(6,*) az,xdeg,dist,rlon1,rlat1,rlon2,rlat2
       else
          write(0,1010) 'ERROR: ',line(1:lnblnk(line))
       endif

@@ -61,6 +61,10 @@ c     print *,'Number of channels in channel file:',nchn
          levent=.TRUE.
       else
          if (line(26:26).eq.'.' .and. line(80:80).eq.' ') then
+
+c quick fix for Lg
+           if (line(11:12).eq.'Lg') line(11:12)='Sg'
+
            read(line,'(1x,a5,4x,a2)') ksta,phase
            ii=-1
            do j=1,nchn
@@ -75,14 +79,12 @@ c     print *,'Number of channels in channel file:',nchn
            else
                if (line(7:7).eq.' ') then
                   line(7:7)=chn(ii)(1:1)
-               else
-                  if (phase(1:1).eq.'P') then
-                     line(8:8)='Z'
-                  elseif (phase(1:1).eq.'S') then
-                     line(8:8)=chn(ii)(3:3)
-                  endif
-
-                endif
+               endif
+               if (phase(1:1).eq.'P') then
+                   line(8:8)='Z'
+               elseif (phase(1:1).eq.'S') then
+                   line(8:8)=chn(ii)(3:3)
+               endif
 
            endif
          endif
