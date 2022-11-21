@@ -15,6 +15,7 @@
       integer*2 az,gap
 
       character*14 evid
+      character*8 arrid
 
       character*6 magname
       real*4 mag,magerr
@@ -139,8 +140,13 @@
                   km='S'
                elseif (magname(1:4).eq.'ML  ') then
                   km='L'
+               elseif (magname(1:4).eq.'Ml  ') then
+                  km='L'
+               elseif (magname(1:4).eq.'MLv ') then
+                  km='L'
                else
                   write(0,*) 'Unknown magnitude: ',magname
+                  write(0,'(a)') line
                   km=' '
                endif
                if (magsrc.eq.'bul') magsrc='IGN'
@@ -167,7 +173,13 @@ c              lmag=.FALSE.
              if (line(10:10).eq.'.' .and. line(20:21).ne.'IV') then
                ncard=ncard+1
                read(line,1002) sta,dist,evaz,phase,hh,mm,ss,tres,
-     &         amp,per
+     &         amp,per,arrid
+
+c              before 2016-02-18 Sg is reported as Lg
+
+               if (phase(1:4).eq.'Lg  ' .and. year.le.2016) then
+                   phase='Sg      '
+               endif
 
                dist=dist*111.11
                if (dist.le.50. .and. phase(1:1).eq.'P') then
@@ -182,9 +194,18 @@ c              lmag=.FALSE.
                   weight=4
                endif
 
-               if (phase(1:1).eq.'P') cmp='Z'
-               if (phase(1:1).eq.'S') cmp='N'
-               if (phase(1:1).eq.'L') cmp='E'
+               if (year.ge.2016 .and. arrid(3:3).eq.'_') then
+                   inst=arrid(6:6)
+                   cmp=arrid(8:8)
+                   if (cmp.eq.'Z' .and. phase(1:1).eq.'S') then
+                       cmp='E'
+                   endif
+               else
+                   inst=' '
+                   if (phase(1:1).eq.'P') cmp='Z'
+                   if (phase(1:1).eq.'S') cmp='E'
+                   if (phase(1:1).eq.'L') cmp='E'
+               endif
 
                call line4(card(ncard),sta,inst,cmp,onset,phase,weight,
      &         auto,pol,hh,mm,ss,amp,per,tres,dist,evaz)
@@ -217,7 +238,7 @@ c              lmag=.FALSE.
  1011 format(i4,4(1x,i2),1x,f5.2,1x,f5.2,1x,f5.2,1x,f8.4,1x,f9.4,
      & 2(1x,f5.1),1x,i3,1x,f5.1,a1,6x,i4,1x,i4,1x,i3,22x,a3)
  1002 format(a5,1x,f6.3,1x,f5.1,1x,a8,2(1x,i2),1x,f6.3,1x,f5.1,37x,
-     & f9.1,1x,f5.2)
+     & f9.1,1x,f5.2,16x,a8)
 
 c - error messages
 
