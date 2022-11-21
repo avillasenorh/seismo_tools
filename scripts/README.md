@@ -32,4 +32,16 @@ Examples:
     $ getjul 1990-05-31
     151
 
+## ign2nor.sh
+
+Converts a IMS file (IGN version) to SEISAN's Nordic format 1.
+Requires `ign2nor` (this version converts Lg to Sg for events before 2016
+and also reads arrival info and sets channel and component).
+Some events in January-February 2016 are still with old format.
+
+Usage:
+
+    $ ign2nor.sh ims_file
+
+Output is a file with same base name as the IMS file with `nor` extension.
 
