@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
 
 	char	line[MAXLINE];
     char    **cards;
+    char    eqline1[CARD_SIZE], eqline2[CARD_SIZE];
 
 	int	*evno1, *evno2;
 
@@ -54,6 +55,7 @@ int main(int argc, char *argv[])
     int offset;
 
     int counter1, counter2;
+    int previous1, previous2;
 
 	int	lfile1=FALSE;
 	int	lfile2=FALSE;
@@ -139,7 +141,6 @@ int main(int argc, char *argv[])
 		}
 	}
 
-
 	// allocate arrays for input file
 
     evno1 = (int *)malloc(MAXEQ*sizeof(int));
@@ -170,21 +171,26 @@ int main(int argc, char *argv[])
     counter1 = 0; // event counter for file1
     counter2 = 0; // event counter for file2
 
+    previous1 = 0; // previous non-zero event in column 1
+    previous2 = 0; // previous non-zero event in column 2
+
     i = 0;
     j = 0;
     while (i < nevents) {
 
          fprintf(stderr, "Event number: %d   File 1 index: %d   File 2 index: %d\n", i, evno1[i], evno2[i]);
         // read event from first file
-        if (i == 0) {
-            offset = evno1[i] - 1;
-        } else {
-            offset = evno1[i] - evno1[i-1] - 1;
+        offset = evno1[i] - previous1 - 1;
+        if (offset < 0) {
+            fprintf(stderr, "ERROR: unsorted event numbers in column 1 in line %d: %d\n", i, evno1[i]);
+            exit(1);
         }
         fprintf(stderr, "File 1 offset: %d\n", offset);
         n = get_event_cards(fp1, cards, offset);
         fprintf(stderr, "Event in file 1: %d, cards=%d\n", evno1[i], n);
         for (k = 0; k < n - 1 ; k++) fprintf(stdout, "%s", cards[k]);
+        strcpy(eqline1, cards[0]);
+        previous1 = evno1[i];
 
         // if no event in second file skip
         if (evno2[i] == 0) {
@@ -195,10 +201,10 @@ int main(int argc, char *argv[])
         }
 
         // read event in second file
-        if (i == 0) {
-            offset = evno2[i] - 1;
-        } else {
-            offset = evno2[i] - evno2[i-1] - 1;
+        offset = evno2[i] - previous2 - 1;
+        if (offset < 0) {
+            fprintf(stderr, "ERROR: unsorted event numbers in column 2 in line %d: %d\n", i, evno2[i]);
+            exit(1);
         }
         fprintf(stderr, "File 2 offset: %d\n", offset);
         n = get_event_cards(fp2, cards, offset);
@@ -208,6 +214,10 @@ int main(int argc, char *argv[])
                 fprintf(stdout, "%s", cards[k]);
             }
         }
+        strcpy(eqline2, cards[0]);
+        previous2 = evno2[i];
+
+        fprintf(stderr, "%s%s", eqline1, eqline2);
 
         i++;
     }
