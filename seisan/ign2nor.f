@@ -29,6 +29,12 @@
       integer*2 weight,hh,mm
       real*4 ss,amp,per,tres,dist,evaz
 
+      character*8 sdate
+      character*10 stime
+      character*5 szone
+      integer svalues(8)
+      character*14 creation
+
       logical levent,lmag,lsta
 
       model=' '
@@ -44,6 +50,11 @@
       do i=1,80
          wcard(i:i)=' '
       enddo
+
+      call date_and_time(sdate,stime,szone,svalues)
+      write(creation,5000) svalues(3), svalues(2), svalues(1)-2000,
+     & svalues(5), svalues(6)
+ 5000 format(i0.2,'-',i0.2,'-',i0.2,1x,i0.2,':',i0.2)
 
       write(*,1100) 'Enter input IMS file: '
       read(*,1000) imsfile
@@ -73,8 +84,8 @@
      &   rms,mag1,magt1,magag1,mag2,magt2,magag2,mag3,magt3,magag3)
 
          write(2,1000) card1
-         write(2,'(3a)') 
-     &   ' ACTION:NEW                OP:avh  STATUS:               ID:',
+         write(2,'(5a)') 
+     &   ' ACTION:NEW ',creation,' OP:avh  STATUS:               ID:',
      &   evid,' L   I'
          write(2,'(2a)') ' STAT SP IPHASW D HRMM SECON CODA AMPLIT ',
      &   'PERI AZIMU VELO AIN AR TRES W  DIS CAZ7'
