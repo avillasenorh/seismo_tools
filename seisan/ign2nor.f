@@ -52,7 +52,11 @@
       enddo
 
       call date_and_time(sdate,stime,szone,svalues)
-      write(creation,5000) svalues(3), svalues(2), svalues(1)-2000,
+      if (svalues(1) .lt. 2022) then
+          print *, 'ERROR: invalid system date:', svalues(1)
+          stop 1
+      endif
+      write(creation,5000) svalues(1)-2000, svalues(2), svalues(3),
      & svalues(5), svalues(6)
  5000 format(i0.2,'-',i0.2,'-',i0.2,1x,i0.2,':',i0.2)
 
