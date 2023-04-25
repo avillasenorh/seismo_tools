@@ -32,7 +32,7 @@
 #define TRUE	1
 #define FALSE	0
 
-#define MAXEQ	25000
+#define MAXEQ	1000000
 
 int get_event_cards(FILE *fp, char **cards, int offset);
 int is_blank(const char *s);
