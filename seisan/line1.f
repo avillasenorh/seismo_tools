@@ -19,7 +19,7 @@
 
       if (magt3.ne.' ') then
          write(mag_str3,1001) mag3,magt3,magag3
-         print *,mag_str3
+c        print *,mag_str3
       endif
 
       write(card,1000) year,month,day,hour,minute,second,

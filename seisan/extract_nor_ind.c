@@ -4,7 +4,7 @@
 #include <string.h>
 
 /***********************************************************************
-* merge_assoc.c
+* extract_nor_ind.c
 * Reads two nordic files and an index file results of associating
 *  the events in the second file to the events in the first file
 * For the common events, the program adds the picks of the second
@@ -17,7 +17,7 @@
 * -V             : verbose (default runs silently)
 *
 *
-* Usage: % merge_assoc nordic1 nordic2 -I indfile  [-o outfile ] [ -V ]
+* Usage: % extract_nor_ind nordic_file -I indfile  [-o outfile ] [ -V ]
 ***********************************************************************/
 
 #ifndef FILENAME_MAX
@@ -38,35 +38,34 @@ int is_blank(const char *s);
 
 int main(int argc, char *argv[])
 {
-	FILE	*fp1, *fp2, *fpind, *fpout;
-	char	file1[FILENAME_MAX], file2[FILENAME_MAX], indfile[FILENAME_MAX];
+	FILE	*fp, *fpind, *fpout;
+	char	file[FILENAME_MAX], indfile[FILENAME_MAX];
 	char	outfile[FILENAME_MAX];
 
 	char	line[MAXLINE];
     char    **cards;
-    char    eqline1[CARD_SIZE], eqline2[CARD_SIZE];
+    char    eqline[CARD_SIZE];
 
-	int	*evno1, *evno2;
+	int	*evno;
 
 	int	i, j, k;
     int n;
 	int	nevents;
     int offset;
 
-    int counter1, counter2;
-    int previous1, previous2;
+    int counter;
+    int previous;
 
-	int	lfile1=FALSE;
-	int	lfile2=FALSE;
+	int	lfile=FALSE;
 	int	lout=FALSE;
 	int	lind=FALSE;
 	int	verbose=FALSE;
 
 	/* usage */
 
-	if (argc <= 4) {
+	if (argc <= 3) {
 		fprintf(stderr,
-		"usage: merge_assoc file1 file2 -I indfile [-o outfile ] [ -V ]\n");
+		"usage: extract_nor_ind file -I indfile [-o outfile ] [ -V ]\n");
 		exit(1);
 	}
 
@@ -92,20 +91,13 @@ int main(int argc, char *argv[])
 					break;
 			}
 		} else {
-            if (! lfile1) {
-		    	if ((fp1=fopen(argv[i],"r")) == NULL) {
+            if (! lfile) {
+		    	if ((fp=fopen(argv[i],"r")) == NULL) {
 		    		fprintf(stderr,"ERROR: cannot open input file: %s\n",argv[i]);
 		    		exit(1);
                 }
-                lfile1 = TRUE;
-                strcpy(file1, argv[i]);
-			} else if (! lfile2) {
-		    	if ((fp2=fopen(argv[i],"r")) == NULL) {
-		    		fprintf(stderr,"ERROR: cannot open input file: %s\n",argv[i]);
-		    		exit(1);
-                }
-                lfile2 = TRUE;
-                strcpy(file2, argv[i]);
+                lfile = TRUE;
+                strcpy(file, argv[i]);
             } else {
                 fprintf(stderr, "ERROR: too many input files: %s\n",argv[i]);
                 exit(1);
@@ -125,9 +117,8 @@ int main(int argc, char *argv[])
 		}
 	}
     if (verbose) {
-        fprintf(stderr, "First Nordic file : %s\n", file1);
-        fprintf(stderr, "Second Nordic file: %s\n", file2);
-        fprintf(stderr, "Index file        : %s\n", indfile);
+        fprintf(stderr, "Nordic file : %s\n", file);
+        fprintf(stderr, "Index file  : %s\n", indfile);
     }
 
 	/* if no output file passed, write to stdout */
@@ -142,8 +133,7 @@ int main(int argc, char *argv[])
 
 	// allocate arrays for input file
 
-    evno1 = (int *)malloc(MAXEQ*sizeof(int));
-    evno2 = (int *)malloc(MAXEQ*sizeof(int));
+    evno = (int *)malloc(MAXEQ*sizeof(int));
 
     cards = (char **)malloc(sizeof(char *) * MAX_CARDS);
     cards[0] = (char *)malloc(sizeof(char) * MAX_CARDS * CARD_SIZE);
@@ -156,7 +146,7 @@ int main(int argc, char *argv[])
 			fprintf(stderr,"ERROR: number of indices greater than MAXEQ: %d\n", i);
 			exit(1);
 		}
-		sscanf(line,"%d %d", &evno1[i], &evno2[i]);
+		sscanf(line,"%d", &evno[i]);
 		i++;
 	}
 	nevents = i;
@@ -167,66 +157,34 @@ int main(int argc, char *argv[])
 
 	// loop through index file
 
-    counter1 = 0; // event counter for file1
-    counter2 = 0; // event counter for file2
+    counter = 0; // event counter for file1
+    previous = 0; // previous event number
 
-    previous1 = 0; // previous non-zero event in column 1
-    previous2 = 0; // previous non-zero event in column 2
 
     i = 0;
-    j = 0;
     while (i < nevents) {
 
-         fprintf(stderr, "Event number: %d   File 1 index: %d   File 2 index: %d\n", i, evno1[i], evno2[i]);
+         fprintf(stderr, "Event number: %d   Nordic file index: %d\n", i, evno[i]);
         // read event from first file
-        offset = evno1[i] - previous1 - 1;
+        offset = evno[i] - previous - 1;
         if (offset < 0) {
-            fprintf(stderr, "ERROR: unsorted event numbers in column 1 in line %d: %d\n", i, evno1[i]);
+            fprintf(stderr, "ERROR: unsorted event numbers in column 1 in line %d: %d\n", i, evno[i]);
             exit(1);
         }
-        fprintf(stderr, "File 1 offset: %d\n", offset);
-        n = get_event_cards(fp1, cards, offset);
-        fprintf(stderr, "Event in file 1: %d, cards=%d\n", evno1[i], n);
-        for (k = 0; k < n - 1 ; k++) fprintf(stdout, "%s", cards[k]);
-        strcpy(eqline1, cards[0]);
-        previous1 = evno1[i];
+        fprintf(stderr, "Nordic file offset: %d\n", offset);
+        n = get_event_cards(fp, cards, offset);
+        fprintf(stderr, "Event in Nordic file: %d, cards=%d\n", evno[i], n);
+        for (k = 0; k < n ; k++) fprintf(stdout, "%s", cards[k]);
+        strcpy(eqline, cards[0]);
+        previous = evno[i];
 
-        // if no event in second file skip
-        if (evno2[i] == 0) {
-            fprintf(stdout, "%s", cards[n-1]);
-            fprintf(stderr, "No event in file 2\n");
-            i++;
-            continue;
-        }
-
-        // read event in second file
-        offset = evno2[i] - previous2 - 1;
-        if (offset < 0) {
-            fprintf(stderr, "ERROR: unsorted event numbers in column 2 in line %d: %d\n", i, evno2[i]);
-            exit(1);
-        }
-        fprintf(stderr, "File 2 offset: %d\n", offset);
-        n = get_event_cards(fp2, cards, offset);
-        fprintf(stderr, "Event in file 2 %d, cards=%d\n", evno2[i], n);
-        for (k = 0; k < n ; k++) {
-            if (cards[k][79] == ' ' || is_blank(cards[k])) {
-                fprintf(stdout, "%s", cards[k]);
-            }
-        }
-        strcpy(eqline2, cards[0]);
-        previous2 = evno2[i];
-
-        fprintf(stderr, "%s%s", eqline1, eqline2);
+        fprintf(stderr, "%s", eqline);
 
         i++;
     }
 
-	fclose(fp1);
-	fclose(fp2);
+	fclose(fp);
 	if (lout) fclose(fpout);
-
-    if (verbose) fprintf(stderr, "Events to merge: %d\n", j);
-//	if (j != nindd) fprintf(stderr, "WARNING: discrepancy between index file and lines written\n");
 
 	return 0;
 }

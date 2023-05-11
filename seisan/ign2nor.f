@@ -75,14 +75,21 @@
 
       if (line(1:7).eq.'   Date') then
          levent=.TRUE.
+         dtype='L'
       elseif (line(1:9).eq.'Magnitude') then
          lmag=.TRUE.
          levent=.FALSE.
+      elseif (line(3:13).eq.'#DIST_RANGE') then
+         dtype=line(16:16)
       elseif (line(1:4).eq.'Sta ') then
          ncard=0
          lsta=.TRUE.
          levent=.FALSE.
          lmag=.FALSE.
+         if (dtype.ne.'L' .and. dtype.ne.'R' .and. dtype.ne.'D') then
+             write(0,*) 'Unknown event type:', dtype
+             dtype='L'
+         endif
          call line1(card1,year,month,day,hour,minute,second,
      &   model,dtype,etype,lat,lon,depth,deptype,locind,agency,nsta,
      &   rms,mag1,magt1,magag1,mag2,magt2,magag2,mag3,magt3,magag3)
@@ -146,6 +153,8 @@
                elseif (magname(1:4).eq.'mbLg') then
                   km='G'
                elseif (magname(1:4).eq.'M_mb') then
+                  km='W'
+               elseif (magname(1:4).eq.'MW  ') then
                   km='W'
                elseif (magname(1:4).eq.'Mc  ') then
                   km='C'
@@ -248,7 +257,9 @@ c              before 2016-02-18 Sg is reported as Lg
  1000 format(a)
  1100 format(a,$)
  2000 format(2a)
- 1001 format(i4,4(1x,i2),1x,f6.3,1x,f5.2,1x,f5.2,1x,f8.4,1x,f9.4,
+c1001 format(i4,4(1x,i2),1x,f6.3,1x,f5.2,1x,f5.2,1x,f8.4,1x,f9.4,
+c    & 2(1x,f5.1),1x,i3,1x,f5.1,a1,6x,i4,1x,i4,1x,i3,22x,a3)
+ 1001 format(i4,4(1x,i2),1x,f5.2,2x,f5.2,1x,f5.2,1x,f8.4,1x,f9.4,
      & 2(1x,f5.1),1x,i3,1x,f5.1,a1,6x,i4,1x,i4,1x,i3,22x,a3)
  1011 format(i4,4(1x,i2),1x,f5.2,1x,f5.2,1x,f5.2,1x,f8.4,1x,f9.4,
      & 2(1x,f5.1),1x,i3,1x,f5.1,a1,6x,i4,1x,i4,1x,i3,22x,a3)

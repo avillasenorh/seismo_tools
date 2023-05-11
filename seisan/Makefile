@@ -13,6 +13,7 @@ BINARIES =	ign2nor \
 			selnor \
 			nor2stalist \
 			nor_addchn \
+            extract_nor_ind \
             merge_assoc \
 			sfilecmp \
 			sfileweigth \
@@ -42,6 +43,9 @@ nor2stalist:	nor2stalist.o
 
 nor_addchn:	nor_addchn.o
 	$(FC) $(FFLAGS) -o $(BINDIR)/nor_addchn nor_addchn.o
+
+extract_nor_ind:	extract_nor_ind.o
+	$(CC) $(FFLAGS) -o $(BINDIR)/extract_nor_ind extract_nor_ind.o
 
 merge_assoc:	merge_assoc.o
 	$(CC) $(FFLAGS) -o $(BINDIR)/merge_assoc merge_assoc.o
