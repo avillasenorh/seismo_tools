@@ -207,7 +207,7 @@ int main(int argc, char *argv[])
         }
         fprintf(stderr, "File 2 offset: %d\n", offset);
         n = get_event_cards(fp2, cards, offset);
-        fprintf(stderr, "Event in file 2 %d, cards=%d\n", evno2[i], n);
+        fprintf(stderr, "Event in file 2: %d, cards=%d\n", evno2[i], n);
         for (k = 0; k < n ; k++) {
             if (cards[k][79] == ' ' || is_blank(cards[k])) {
                 fprintf(stdout, "%s", cards[k]);
@@ -246,6 +246,7 @@ int get_event_cards(FILE *fp, char **cards, int offset) {
             exit(1);
         }
         strcpy(cards[ncards], line);
+//      fprintf(stderr, "%2d %5d %5d %s", is_blank(line), offset, event, line);
         ncards++;
         if (is_blank(line)) {
 //          fprintf(stderr, "event=%d, offset=%d, ncards=%d\n", event, offset, ncards);

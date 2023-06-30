@@ -45,3 +45,16 @@ Usage:
 
 Output is a file with same base name as the IMS file with `nor` extension.
 
+
+## depth_ttimes.sh
+
+GMT6 script to plot travel-time vs distance for a 1D layered model.
+Uses SEISAN's `ttlayer` executable. Reads 1D model from STATION0.HYP (local file or at
+the global location `$SEISAN_TOP/DAT`).
+
+
+## depth_ttimes_reduced.sh
+
+Same as `depth_ttimes.sh` but using a reduction velocity.
+
+
