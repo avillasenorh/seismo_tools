@@ -156,6 +156,8 @@
                   km='W'
                elseif (magname(1:4).eq.'MW  ') then
                   km='W'
+               elseif (magname(1:4).eq.'Mwp ') then
+                  km='W'
                elseif (magname(1:4).eq.'Mc  ') then
                   km='C'
                elseif (magname(1:4).eq.'Md  ') then
